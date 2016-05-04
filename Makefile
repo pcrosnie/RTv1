@@ -12,9 +12,9 @@
 
 NAME = rtv1
 
-FLAGS = -Wall -Werror -Wextra -L /usr/lib -lmlx -framework OpenGl -framework AppKit
+FLAGS = -Wall -Werror -Wextra -framework OpenGl -framework AppKit
 
-SRC = libft/libft.a main.c
+SRC = libft/libft.a libmlx.a main.c
 
 all: $(NAME)
 

@@ -29,16 +29,28 @@ void	ft_check_impact(double x, double y, t_data *ptr, t_sph *sph)
 	double	ry;
 	double	rz;
 	double	ret;
+	int i;
 
-	rx = 450 + (tan(ptr->ahor + ((M_PI_2 / 900) * (x + 1))) * (ptr->posy - sph->cy));
-	ry = 50;
-	rz = ptr->posz + (tan(ptr->aver + ((M_PI / 3) / 600) * (y + 1)) * (ptr->posy - sph->cy));
-	ret = ((rx - 450) * (rx - 450)) + ((ry - 50) * (ry - 50)) + ((rz - 50) * (rz - 50));
-	printf("%f : %f : %f\n", tan(ptr->ahor + ((M_PI_2 / 900) * (x + 1))) * (ptr->posx - sph->cx), rx, ret);
+	i = 0;
+	ret = 0;
+	ptr->t = ptr->posy - sph->cy - 100;
+//	while (ptr->t < ptr->posy - sph->cy)
+//	{
+//	rx = ptr->posx + (tan(ptr->ahor + ((M_PI_2 / 900) * (x + 1))) * ptr->t);
+	rx = ptr->posx + ((cos(ptr->aver + ((M_PI / 3 / 900) * (y + 1) * ptr->t)) * cos(ptr->ahor + ((M_PI_2 / 900) * (x + 1)) * ptr->t)) / ptr->t);
+	ry = ptr->posy + (ptr->t / (cos(ptr->aver + ((M_PI / 3 / 900) * (y + 1) * ptr->t)) * sin(ptr->ahor + ((M_PI_2 / 900) * (x + 1)) * ptr->t)));
+	rz = ptr->posz + (sin(ptr->aver + ((M_PI / 3) / 600) * (y + 1)) * ptr->t);
+	ret = ((rx - sph->cx) * (rx - sph->cx)) + ((ry - sph->cy) * (ry - sph->cy)) + ((rz - sph->cz) * (rz - sph->cz));
+//	printf("%f : %f\n", rx, ret);
 	if (ret <= 2500)
 	{
 		ft_draw(ptr, x, y);
 	}
+	ptr->t++;
+//	ft_putnbr(ptr->posy - sph->cy);
+//	ft_putchar('\n');
+//	ft_putstr("here\n");
+//	}
 }
 
 void	ft_set_rays(t_data *ptr, t_sph *sph)
@@ -77,7 +89,24 @@ void	ft_set_sphere(t_data *ptr)
 	ptr->blue = 255;
 	ptr->ahor = M_PI_2 + M_PI_4;
 	ptr->aver = - M_PI / 6;
+	ptr->sph = sph;
 	ft_set_rays(ptr, sph);
+}
+
+int	ft_move(int button, t_data *ptr)
+{
+	(button == 53) ? exit(0) : 0;
+	(button == 126) ? ptr->posy -= 10 : 0;
+	(button == 125) ? ptr->posy += 10 : 0;
+	(button == 124) ? ptr->posx += 10 : 0;
+	(button == 123) ? ptr->posx -= 10 : 0;
+	
+	free(ptr->data_addr);
+	ptr->im = mlx_new_image(ptr->mlx, 900, 600);
+	ptr->data_addr = mlx_get_data_addr(ptr->im, &(ptr->bits), &(ptr->len), &(ptr->endian));
+	ft_set_rays(ptr, ptr->sph);
+	mlx_put_image_to_window(ptr->mlx, ptr->win, ptr->im, 0, 0);
+	return (0);
 }
 
 void	ft_set_window(t_data *ptr)
@@ -88,6 +117,7 @@ void	ft_set_window(t_data *ptr)
 	ptr->data_addr = mlx_get_data_addr(ptr->im, &(ptr->bits), &(ptr->len), &(ptr->endian));
 	ft_set_sphere(ptr);
 	mlx_put_image_to_window(ptr->mlx, ptr->win, ptr->im, 0, 0);
+	mlx_key_hook(ptr->win, ft_move, ptr);
 	mlx_loop(ptr->mlx);
 }
 

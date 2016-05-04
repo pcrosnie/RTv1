@@ -34,6 +34,8 @@ typedef struct	s_data
 	int		red;
 	int		green;
 	int		blue;
+	double	t;
+	struct	s_sph	*sph;
 }				t_data;
 
 typedef struct	s_sph
@@ -50,6 +52,6 @@ typedef struct	s_wall
 	int		y;
 	int		height;
 	int		width;
-}
+}		t_wall;
 
 #endif
