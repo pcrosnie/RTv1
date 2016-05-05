@@ -6,7 +6,7 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/27 14:10:05 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/04/27 20:02:59 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/05 17:12:27 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	ft_draw(t_data *ptr, float x, float y)
 	ptr->data_addr[nb + 2] = ptr->blue;
 }
 
+/*
 void	ft_check_impact(double x, double y, t_data *ptr, t_sph *sph)
 {
 	double	rx;
@@ -52,8 +53,69 @@ void	ft_check_impact(double x, double y, t_data *ptr, t_sph *sph)
 //	ft_putstr("here\n");
 //	}
 }
+*/
 
-void	ft_set_rays(t_data *ptr, t_sph *sph)
+double	ft_solve_poly(t_data *ptr, double rx, double ry, double rz)
+{
+	double	d;
+	double	b;
+//	double	sol1;
+//	double	sol2;
+
+	b = 2 * ((rx * (ptr->posx - ptr->sph->cx) + (ry * (ptr->posy - ptr->sph->cy)) + (rz * (ptr->posz - ptr->sph->cz))));
+	d = (b * b) - (4 * ((rx * rx) + (ry * ry) + (rz * rz))) * (((ptr->posx - ptr->sph->cx) * (ptr->posx - ptr->sph->cx)) + ((ptr->posy - ptr->sph->cy) * (ptr->posy - ptr->sph->cy)) + ((ptr->posz - ptr->sph->cz) * (ptr->posz - ptr->sph->cz)) - (ptr->sph->rayon * ptr->sph->rayon));
+/*	if (d == 0)
+		sol1 = (b * (-1)) / (2 * ((rx * rx) + (ry * ry) + (rz * rz)));
+	else if (d >= 0)
+	{
+		sol1 = ((b * (-1)) - sqrt(d)) / (2 * ((rx * rx) + (ry * ry) + (rz * rz)));
+		sol2 = ((b * (-1)) - sqrt(d)) / (2 * ((rx * rx) + (ry * ry) + (rz * rz)));
+		if (sol1 < sol2)
+			return (sol1);
+		else
+			return (sol2);
+	}
+	else
+		sol1 = 0;*/
+	return (d);
+}
+
+int		ft_set_wall(t_data *ptr, double rx, double ry, double rz)
+{
+	double a;
+
+	a = -ptr->posy / ry;
+	if (ptr->posx + (rx * a) < 200 && ptr->posx + (rx * a) > 0 && ptr->posz + (rz * a) < 500 && ptr->posz + (rz * a) > 0)
+		return (1);
+	return (0);
+}
+
+void	ft_check_impact(double x, double y, t_data *ptr)
+{
+	double rx;
+	double ry;
+	double rz;
+//	double ret;
+
+	ry = cos(ptr->ahor + ((M_PI_2 / 900) * (x))) * cos(ptr->aver + ((M_PI_2 / 900) * (y)));
+	rx = cos(ptr->ahor + ((M_PI_2 / 900) * (x))) * sin(ptr->aver + ((M_PI_2 / 900) * (y)));
+	rz = sin(ptr->ahor + ((M_PI_2 / 900) * (x)));
+	if (ft_set_wall(ptr, rx, ry, rz) == 1)
+	{
+		ptr->green = 255;
+		ft_draw(ptr, x, y);
+		ptr->green = 0;
+	}
+//	ret = ft_solve_poly(ptr, rx, ry, rz);
+//	rx *= ret;
+//	ry *= ret;
+//	rz *= ret;
+//	if (((ptr->posx + rx - ptr->sph->cx) * (ptr->posx + rx - ptr->sph->cx)) + ((ptr->posy + ry - ptr->sph->cy) * (ptr->posy + ry - ptr->sph->cy)) + ((ptr->posz + rz - ptr->sph->cz) * (ptr->posz + rz - ptr->sph->cz)) <= (ptr->sph->rayon * ptr->sph->rayon))
+	if (ft_solve_poly(ptr, rx, ry, rz) >= 0)	
+	ft_draw(ptr, x, y);
+}
+
+void	ft_set_rays(t_data *ptr)
 {
 	int	x;
 	int	y;
@@ -63,9 +125,9 @@ void	ft_set_rays(t_data *ptr, t_sph *sph)
 	while (x < 900)
 	{
 		y = 0;
-		while (y < 600)
+		while (y < 900)
 		{
-			ft_check_impact(x, y, ptr, sph);
+			ft_check_impact(x, y, ptr);
 			y++;
 		}
 		x++;
@@ -77,20 +139,20 @@ void	ft_set_sphere(t_data *ptr)
 	t_sph *sph;
 
 	sph = (t_sph *)malloc(sizeof(t_sph));
-	sph->cx = 450;
+	sph->cx = 50;
 	sph->cy = 50;
-	sph->cz = 200;
+	sph->cz = 50;
 	sph->rayon = 50;
-	ptr->posx = 450;
+	ptr->posx = 50;
 	ptr->posy = 500;
-	ptr->posz = 0;
+	ptr->posz = 50;
 	ptr->red = 0;
 	ptr->green = 0;
 	ptr->blue = 255;
 	ptr->ahor = M_PI_2 + M_PI_4;
-	ptr->aver = - M_PI / 6;
+	ptr->aver = M_PI_2 + M_PI_4;
 	ptr->sph = sph;
-	ft_set_rays(ptr, sph);
+	ft_set_rays(ptr);
 }
 
 int	ft_move(int button, t_data *ptr)
@@ -98,13 +160,16 @@ int	ft_move(int button, t_data *ptr)
 	(button == 53) ? exit(0) : 0;
 	(button == 126) ? ptr->posy -= 10 : 0;
 	(button == 125) ? ptr->posy += 10 : 0;
-	(button == 124) ? ptr->posx += 10 : 0;
-	(button == 123) ? ptr->posx -= 10 : 0;
-	
+	(button == 124) ? ptr->posz -= 10 : 0;
+	(button == 123) ? ptr->posz += 10 : 0;
+	(button == 34) ? ptr->ahor += M_PI_2 / 100 : 0;
+	(button == 31) ? ptr->ahor -= M_PI_2 / 100 : 0;
+	(button == 78) ? ptr->posx -= 10 : 0;
+	(button == 69) ? ptr->posx += 10 : 0;
 	free(ptr->data_addr);
-	ptr->im = mlx_new_image(ptr->mlx, 900, 600);
+	ptr->im = mlx_new_image(ptr->mlx, 900, 900);
 	ptr->data_addr = mlx_get_data_addr(ptr->im, &(ptr->bits), &(ptr->len), &(ptr->endian));
-	ft_set_rays(ptr, ptr->sph);
+	ft_set_rays(ptr);
 	mlx_put_image_to_window(ptr->mlx, ptr->win, ptr->im, 0, 0);
 	return (0);
 }
@@ -112,8 +177,8 @@ int	ft_move(int button, t_data *ptr)
 void	ft_set_window(t_data *ptr)
 {
 	ptr->mlx = mlx_init();
-	ptr->win = mlx_new_window(ptr->mlx, 900, 600, "RTv1");
-	ptr->im = mlx_new_image(ptr->mlx, 900, 600);
+	ptr->win = mlx_new_window(ptr->mlx, 900, 900, "RTv1");
+	ptr->im = mlx_new_image(ptr->mlx, 900, 900);
 	ptr->data_addr = mlx_get_data_addr(ptr->im, &(ptr->bits), &(ptr->len), &(ptr->endian));
 	ft_set_sphere(ptr);
 	mlx_put_image_to_window(ptr->mlx, ptr->win, ptr->im, 0, 0);
