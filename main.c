@@ -6,7 +6,7 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/27 14:10:05 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/05/05 17:12:27 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/06 12:26:23 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,24 +59,28 @@ double	ft_solve_poly(t_data *ptr, double rx, double ry, double rz)
 {
 	double	d;
 	double	b;
-//	double	sol1;
-//	double	sol2;
+	double	sol1;
+	double	sol2;
 
 	b = 2 * ((rx * (ptr->posx - ptr->sph->cx) + (ry * (ptr->posy - ptr->sph->cy)) + (rz * (ptr->posz - ptr->sph->cz))));
 	d = (b * b) - (4 * ((rx * rx) + (ry * ry) + (rz * rz))) * (((ptr->posx - ptr->sph->cx) * (ptr->posx - ptr->sph->cx)) + ((ptr->posy - ptr->sph->cy) * (ptr->posy - ptr->sph->cy)) + ((ptr->posz - ptr->sph->cz) * (ptr->posz - ptr->sph->cz)) - (ptr->sph->rayon * ptr->sph->rayon));
-/*	if (d == 0)
+	if (d == 0)
 		sol1 = (b * (-1)) / (2 * ((rx * rx) + (ry * ry) + (rz * rz)));
 	else if (d >= 0)
 	{
 		sol1 = ((b * (-1)) - sqrt(d)) / (2 * ((rx * rx) + (ry * ry) + (rz * rz)));
 		sol2 = ((b * (-1)) - sqrt(d)) / (2 * ((rx * rx) + (ry * ry) + (rz * rz)));
-		if (sol1 < sol2)
-			return (sol1);
+		if (sol1 > sol2)
+		{
+			if (ptr->distance > sol1 && ptr->distance != 0)
+				return (-1);
+		}
 		else
-			return (sol2);
+		{
+			if (ptr->distance > sol2 && ptr->distance != 0)
+			return (-1);
+		}
 	}
-	else
-		sol1 = 0;*/
 	return (d);
 }
 
@@ -85,8 +89,32 @@ int		ft_set_wall(t_data *ptr, double rx, double ry, double rz)
 	double a;
 
 	a = -ptr->posy / ry;
-	if (ptr->posx + (rx * a) < 200 && ptr->posx + (rx * a) > 0 && ptr->posz + (rz * a) < 500 && ptr->posz + (rz * a) > 0)
+	if (ptr->posx + (rx * a) < 200 && ptr->posx + (rx * a) > 0 && ptr->posz + (rz * a) < 1000 && ptr->posz + (rz * a) > 0)
 		return (1);
+	return (0);
+}
+
+void	vector_normalize(double *rx, double *ry, double *rz)
+{
+	int	mod;
+
+	mod = sqrt((*rx * *rx) + (*ry * *ry) + (*rz * *rz));
+	*rx /= mod;
+	*ry /= mod;
+	*rz /= mod;
+}
+
+int		ft_set_ground(t_data *ptr, double rx, double ry, double rz)
+{
+	double a;
+
+	a = -ptr->posx / rx;
+	ptr->distance = 0;
+	if (ptr->posz + (rz * a) < 1000 && ptr->posz + (rz * a) > 0 && ptr->posy + (ry * a) < 200 && ptr->posy + (ry * a) > 0)
+	{
+		ptr->distance = a;
+		return (1);
+	}
 	return (0);
 }
 
@@ -103,16 +131,28 @@ void	ft_check_impact(double x, double y, t_data *ptr)
 	if (ft_set_wall(ptr, rx, ry, rz) == 1)
 	{
 		ptr->green = 255;
+//		ft_putstr("Wall\n");
 		ft_draw(ptr, x, y);
 		ptr->green = 0;
+	}
+	if (ft_set_ground(ptr, rx, ry, rz) == 1)
+	{
+		ptr->red = 255;
+		ptr->blue = 0;
+		ft_draw(ptr, x, y);
+		ptr->red = 0;
+		ptr->blue = 255;
 	}
 //	ret = ft_solve_poly(ptr, rx, ry, rz);
 //	rx *= ret;
 //	ry *= ret;
 //	rz *= ret;
 //	if (((ptr->posx + rx - ptr->sph->cx) * (ptr->posx + rx - ptr->sph->cx)) + ((ptr->posy + ry - ptr->sph->cy) * (ptr->posy + ry - ptr->sph->cy)) + ((ptr->posz + rz - ptr->sph->cz) * (ptr->posz + rz - ptr->sph->cz)) <= (ptr->sph->rayon * ptr->sph->rayon))
-	if (ft_solve_poly(ptr, rx, ry, rz) >= 0)	
-	ft_draw(ptr, x, y);
+	if (ft_solve_poly(ptr, rx, ry, rz) >= 0)
+	{
+//		ft_putstr("Sphere\n");
+		ft_draw(ptr, x, y);
+	}
 }
 
 void	ft_set_rays(t_data *ptr)
@@ -162,10 +202,11 @@ int	ft_move(int button, t_data *ptr)
 	(button == 125) ? ptr->posy += 10 : 0;
 	(button == 124) ? ptr->posz -= 10 : 0;
 	(button == 123) ? ptr->posz += 10 : 0;
-	(button == 34) ? ptr->ahor += M_PI_2 / 100 : 0;
-	(button == 31) ? ptr->ahor -= M_PI_2 / 100 : 0;
+	(button == 34) ? ptr->ahor += M_PI_4 : 0;
+	(button == 31) ? ptr->ahor -= M_PI_4 : 0;
 	(button == 78) ? ptr->posx -= 10 : 0;
 	(button == 69) ? ptr->posx += 10 : 0;
+	(button == 15) ? ft_set_sphere(ptr) : 0;
 	free(ptr->data_addr);
 	ptr->im = mlx_new_image(ptr->mlx, 900, 900);
 	ptr->data_addr = mlx_get_data_addr(ptr->im, &(ptr->bits), &(ptr->len), &(ptr->endian));
