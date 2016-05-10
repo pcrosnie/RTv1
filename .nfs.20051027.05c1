@@ -6,7 +6,7 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/27 14:10:05 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/05/10 16:00:00 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/10 15:56:42 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ int		ft_set_ground(t_data *ptr, double rx, double ry, double rz)
 
 	a = -ptr->posx / rx;
 	ptr->distance = 0;
-	if (ptr->posz + (rz * a) < ptr->ground->bx && ptr->posz + (rz * a) > 0 && ptr->posy + (ry * a) < ptr->ground->by && ptr->posy + (ry * a) > 0)
+	if (ptr->posz + (rz * a) < 1000 && ptr->posz + (rz * a) > 0 && ptr->posy + (ry * a) < 200 && ptr->posy + (ry * a) > 0)
 	{
 		ptr->distance = a;
 		return (1);

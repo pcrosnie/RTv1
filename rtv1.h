@@ -6,7 +6,7 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/27 14:10:44 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/05/06 12:10:59 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/10 15:44:33 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ typedef struct	s_data
 	int		blue;
 	double	distance;
 	struct	s_sph	*sph;
+	struct	s_wall	*wall;
+	struct	s_wall	*ground;
 }				t_data;
 
 typedef struct	s_sph
@@ -48,9 +50,12 @@ typedef struct	s_sph
 
 typedef struct	s_wall
 {
-	double	len;
-	int		x;
-	int		y;
+	int		ax;
+	int		ay;
+	int		az;
+	int		bx;
+	int		by;
+	int		bz;
 	int		height;
 	int		width;
 }		t_wall;
