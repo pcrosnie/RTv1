@@ -6,7 +6,7 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/27 14:10:05 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/05/10 15:56:42 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/11 10:37:49 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ int		ft_set_wall(t_data *ptr, double rx, double ry, double rz)
 	double a;
 
 	a = -ptr->posy / ry;
-	if (ptr->posx + (rx * a) < 200 && ptr->posx + (rx * a) > 0 && ptr->posz + (rz * a) < 1000 && ptr->posz + (rz * a) > 0)
+	if (ptr->posx + (rx * a) < ptr->wall->az && ptr->posx + (rx * a) > ptr->wall->ay && ptr->posz + (rz * a) < ptr->wall->bx && ptr->posz + (rz * a) > ptr->wall->by)
 		return (1);
 	return (0);
 }
@@ -110,7 +110,7 @@ int		ft_set_ground(t_data *ptr, double rx, double ry, double rz)
 
 	a = -ptr->posx / rx;
 	ptr->distance = 0;
-	if (ptr->posz + (rz * a) < 1000 && ptr->posz + (rz * a) > 0 && ptr->posy + (ry * a) < 200 && ptr->posy + (ry * a) > 0)
+	if (ptr->posz + (rz * a) < ptr->ground->bx && ptr->posz + (rz * a) > ptr->ground->ax && ptr->posy + (ry * a) < ptr->ground->by && ptr->posy + (ry * a) > ptr->ground->az)
 	{
 		ptr->distance = a;
 		return (1);

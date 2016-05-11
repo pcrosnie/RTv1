@@ -6,7 +6,7 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/27 14:10:44 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/05/10 15:44:33 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/11 12:03:02 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,9 @@ typedef struct	s_sph
 
 typedef struct	s_wall
 {
+	double	a;
+	double	b;
+	double	c;
 	int		ax;
 	int		ay;
 	int		az;
@@ -59,5 +62,8 @@ typedef struct	s_wall
 	int		height;
 	int		width;
 }		t_wall;
+
+void	ft_set_rays(t_data *ptr);
+void	ft_set_wall_angles(t_data *ptr);
 
 #endif

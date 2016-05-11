@@ -6,7 +6,7 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/27 14:10:05 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/05/10 16:00:00 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/11 12:17:19 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,8 @@ int		ft_set_wall(t_data *ptr, double rx, double ry, double rz)
 {
 	double a;
 
-	a = -ptr->posy / ry;
-	if (ptr->posx + (rx * a) < 200 && ptr->posx + (rx * a) > 0 && ptr->posz + (rz * a) < 1000 && ptr->posz + (rz * a) > 0)
+	a = ((ptr->wall->a * ptr->posx) + (ptr->wall->b * -ptr->posy) + (ptr->wall->c * ptr->posz)) / ((ptr->wall->a * rx) + (ptr->wall->b * ry) + (ptr->wall->c * rz));
+	if (ptr->posx + (rx * a) < ptr->wall->ax && ptr->posx + (rx * a) > ptr->wall->bx && ptr->posz + (rz * a) < ptr->wall->bz && ptr->posz + (rz * a) > ptr->wall->az)
 		return (1);
 	return (0);
 }
@@ -110,7 +110,7 @@ int		ft_set_ground(t_data *ptr, double rx, double ry, double rz)
 
 	a = -ptr->posx / rx;
 	ptr->distance = 0;
-	if (ptr->posz + (rz * a) < ptr->ground->bx && ptr->posz + (rz * a) > 0 && ptr->posy + (ry * a) < ptr->ground->by && ptr->posy + (ry * a) > 0)
+	if (ptr->posz + (rz * a) < ptr->ground->bx && ptr->posz + (rz * a) > ptr->ground->ax && ptr->posy + (ry * a) < ptr->ground->by && ptr->posy + (ry * a) > ptr->ground->az)
 	{
 		ptr->distance = a;
 		return (1);
@@ -189,6 +189,9 @@ void	ft_set_rays(t_data *ptr)
 
 void	ft_set_coord(t_data *ptr)
 {
+	ptr->wall->a = 0;
+	ptr->wall->b = 1;
+	ptr->wall->c = 0;
 	ptr->wall->ax = 0;
 	ptr->wall->ay = 0;
 	ptr->wall->az = 200;
@@ -225,10 +228,24 @@ void	ft_set_sphere(t_data *ptr)
 	ptr->red = 0;
 	ptr->green = 0;
 	ptr->blue = 255;
-	ptr->ahor = M_PI_4;
+	ptr->ahor = 0;
 	ptr->aver = M_PI_2 + M_PI_4;
 	ptr->sph = sph;
 	ft_set_rays(ptr);
+}
+
+void	ft_set_sphere_angles(t_data *ptr)
+{
+	double tmp;
+	double tmp2;
+
+	tmp2 = ptr->sph->cz;
+	tmp = ptr->sph->cy;
+	ptr->sph->cy = ptr->sph->cy * cos(ptr->ahor) - (ptr->sph->cz * sin(ptr->ahor));
+	ptr->sph->cz = tmp * sin(ptr->ahor) + (ptr->sph->cz * cos(ptr->ahor));
+	ft_set_wall_angles(ptr);
+	ptr->sph->cy = tmp;
+	ptr->sph->cz = tmp2;
 }
 
 int	ft_move(int button, t_data *ptr)
@@ -238,15 +255,15 @@ int	ft_move(int button, t_data *ptr)
 	(button == 125) ? ptr->posy += 10 : 0;
 	(button == 124) ? ptr->posz += 10 : 0;
 	(button == 123) ? ptr->posz -= 10 : 0;
-	(button == 34) ? ptr->ahor += 10 : 0;
-	(button == 31) ? ptr->ahor -= 10 : 0;
+	(button == 34) ? ptr->ahor += M_PI_2 / 6 : 0;
+	(button == 31) ? ptr->ahor -= M_PI_2 / 6 : 0;
 	(button == 78) ? ptr->posx -= 10 : 0;
 	(button == 69) ? ptr->posx += 10 : 0;
 	(button == 15) ? ft_set_sphere(ptr) : 0;
 	free(ptr->data_addr);
 	ptr->im = mlx_new_image(ptr->mlx, 900, 900);
 	ptr->data_addr = mlx_get_data_addr(ptr->im, &(ptr->bits), &(ptr->len), &(ptr->endian));
-	ft_set_rays(ptr);
+	ft_set_sphere_angles(ptr);
 	mlx_put_image_to_window(ptr->mlx, ptr->win, ptr->im, 0, 0);
 	return (0);
 }
