@@ -6,7 +6,7 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/27 14:10:05 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/05/12 15:25:31 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/12 17:27:20 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,8 @@ int		ft_set_wall(t_data *ptr, double rx, double ry, double rz)
 	double a;
 
 	a = ((ptr->wall->a * -ptr->posx) + (ptr->wall->b * -ptr->posy) + (ptr->wall->c * -ptr->posz)) / ((ptr->wall->a * rx) + (ptr->wall->b * ry) + (ptr->wall->c * rz));
+//	ptr->spot->sol = a;
+//	ft_set_spot(ptr, rx, ry, rz);
 //	printf("%f\n", a);
 //	if (ptr->posy + (ry * a) > ptr->wall->ay && ptr->posy + (ry * a) < ptr->wall->bx && ptr->posx + (rx * a) > ptr->wall->by && ptr->posx + (rx * a) < ptr->wall->az)
 		return (1);
@@ -151,8 +153,8 @@ void	ft_check_impact(double x, double y, t_data *ptr)
 	if (ft_set_wall(ptr, rx, ry, rz) == 1)
 	{
 		ptr->green = 45;
-		ptr->blue = 45;
-		ptr->red = 45;
+		ptr->blue = 145;
+		ptr->red = 0;
 //		ft_putstr("Wall\n");
 		ft_draw(ptr, x, y);
 		ptr->green = 0;
@@ -200,9 +202,9 @@ void	ft_set_rays(t_data *ptr)
 
 void	ft_set_coord(t_data *ptr)
 {
-	ptr->wall->a = 0;
+	ptr->wall->a = 1;
 	ptr->wall->b = 0;
-	ptr->wall->c = 1;
+	ptr->wall->c = 0;
 	ptr->wall->ax = 0;
 	ptr->wall->ay = 0;
 	ptr->wall->az = 200;
@@ -215,9 +217,9 @@ void	ft_set_coord(t_data *ptr)
 	ptr->ground->bx = 1000;
 	ptr->ground->by = 200;
 	ptr->ground->bz = 0;
-	ptr->spot->posx = 1000;
+	ptr->spot->posx = 50;
 	ptr->spot->posy = 50;
-	ptr->spot->posz = -500;
+	ptr->spot->posz = 50;
 }
 
 void	ft_set_sphere(t_data *ptr)
@@ -276,12 +278,12 @@ int	ft_move(int button, t_data *ptr)
 	(button == 31) ? ptr->ahor -= M_PI_2 / 6 : 0;
 	(button == 78) ? ptr->posx -= 10 : 0;
 	(button == 69) ? ptr->posx += 10 : 0;
-	(button == 15) ? ptr->wall->b++ : 0;
-	(button == 17) ? ptr->wall->b-- : 0;
-	(button == 13) ? ptr->wall->a++ : 0;
-	(button == 14) ? ptr->wall->a-- : 0;
-	(button == 0) ? ptr->wall->c++ : 0;
-	(button == 1) ? ptr->wall->c-- : 0;
+	(button == 15) ? ptr->spot->posx += 10 : 0;
+	(button == 17) ? ptr->spot->posx -= 10 : 0;
+	(button == 13) ? ptr->spot->posy += 10 : 0;
+	(button == 14) ? ptr->spot->posy -= 10 : 0;
+	(button == 0) ? ptr->spot->posz += 10 : 0;
+	(button == 1) ? ptr->spot->posz -= 10 : 0;
 	free(ptr->data_addr);
 	ptr->im = mlx_new_image(ptr->mlx, 900, 900);
 	ptr->data_addr = mlx_get_data_addr(ptr->im, &(ptr->bits), &(ptr->len), &(ptr->endian));

@@ -6,7 +6,7 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/11 11:05:10 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/05/12 16:11:28 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/12 17:22:19 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,15 +52,15 @@ void	ft_set_spot(t_data *ptr, double rx, double ry, double rz)
 	ptr->spot->distance_max = sqrt(((ptr->spot->posx - ptr->sph->cx) * (ptr->spot->posx - ptr->sph->cx)) + ((ptr->spot->posy - ptr->sph->cy) * (ptr->spot->posy - ptr->sph->cy)) + ((ptr->spot->posz - ptr->sph->cz) * (ptr->spot->posz - ptr->sph->cz)));
 	coeff = ptr->spot->distance_max - sqrt(((ptr->spot->posx - (ptr->posx + (rx * sol))) * (ptr->spot->posx - (ptr->posx + (rx * sol)))) + ((ptr->spot->posy - (ptr->posy * (ry * sol))) * (ptr->spot->posy - (ptr->posy + (ry * sol)))) + ((ptr->spot->posz - (ptr->posz + (rz * sol))) * (ptr->spot->posz - (ptr->posz + (rz * sol)))));
 //	ptr->green = coeff;
-	ptr->blue = coeff + 100;
+	ptr->blue = coeff / 1.5 + 100;
 //	printf("%f\n", coeff);
-	ptr->red = coeff + 100;
-	if (coeff + 100 > 255)
+	ptr->red = coeff / 1.5 + 100;
+	if (coeff / 1.5 + 100 >= 255)
 	{
 		ptr->blue = 255;
 		ptr->red = 255;
 	}
-	if (coeff + 100 < 0)
+	else if (coeff / 1.5 + 100 <= 0)
 	{
 		ptr->blue = 0;
 		ptr->red = 0;
