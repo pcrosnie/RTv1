@@ -6,7 +6,7 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/27 14:10:44 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/05/11 12:03:02 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/12 15:03:28 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ typedef struct	s_data
 	struct	s_sph	*sph;
 	struct	s_wall	*wall;
 	struct	s_wall	*ground;
+	struct	s_spot	*spot;
 }				t_data;
 
 typedef struct	s_sph
@@ -53,17 +54,31 @@ typedef struct	s_wall
 	double	a;
 	double	b;
 	double	c;
-	int		ax;
-	int		ay;
-	int		az;
-	int		bx;
-	int		by;
-	int		bz;
-	int		height;
-	int		width;
+	double	ax;
+	double	ay;
+	double	az;
+	double	bx;
+	double	by;
+	double	bz;
+	double	height;
+	double	width;
 }		t_wall;
+
+typedef	struct	s_spot
+{
+	double	posx;
+	double	posy;
+	double	posz;
+	double	rx;
+	double	ry;
+	double	rz;
+	double	angle;
+	double  distance_max;
+	double	sol;
+}				t_spot;
 
 void	ft_set_rays(t_data *ptr);
 void	ft_set_wall_angles(t_data *ptr);
+void	ft_set_spot(t_data *ptr, double rx, double ry, double rz);
 
 #endif

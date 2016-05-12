@@ -6,11 +6,12 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/11 11:05:10 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/05/12 11:41:59 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/12 16:11:28 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rtv1.h"
+#include <stdio.h>
 
 void	ft_set_wall_angles(t_data *ptr)
 {
@@ -40,4 +41,28 @@ void	ft_set_wall_angles(t_data *ptr)
 	ptr->wall->by = tmp4;
 //	ptr->wall->b = tmp5;
 //	ptr->wall->c = tmp6;
+}
+
+void	ft_set_spot(t_data *ptr, double rx, double ry, double rz)
+{
+	double	coeff;
+	double sol;
+
+	sol = ptr->spot->sol;
+	ptr->spot->distance_max = sqrt(((ptr->spot->posx - ptr->sph->cx) * (ptr->spot->posx - ptr->sph->cx)) + ((ptr->spot->posy - ptr->sph->cy) * (ptr->spot->posy - ptr->sph->cy)) + ((ptr->spot->posz - ptr->sph->cz) * (ptr->spot->posz - ptr->sph->cz)));
+	coeff = ptr->spot->distance_max - sqrt(((ptr->spot->posx - (ptr->posx + (rx * sol))) * (ptr->spot->posx - (ptr->posx + (rx * sol)))) + ((ptr->spot->posy - (ptr->posy * (ry * sol))) * (ptr->spot->posy - (ptr->posy + (ry * sol)))) + ((ptr->spot->posz - (ptr->posz + (rz * sol))) * (ptr->spot->posz - (ptr->posz + (rz * sol)))));
+//	ptr->green = coeff;
+	ptr->blue = coeff + 100;
+//	printf("%f\n", coeff);
+	ptr->red = coeff + 100;
+	if (coeff + 100 > 255)
+	{
+		ptr->blue = 255;
+		ptr->red = 255;
+	}
+	if (coeff + 100 < 0)
+	{
+		ptr->blue = 0;
+		ptr->red = 0;
+	}
 }

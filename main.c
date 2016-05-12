@@ -6,7 +6,7 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/27 14:10:05 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/05/12 12:02:30 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/12 15:25:31 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,19 +64,25 @@ double	ft_solve_poly(t_data *ptr, double rx, double ry, double rz)
 
 	b = 2 * ((rx * (ptr->posx - ptr->sph->cx) + (ry * (ptr->posy - ptr->sph->cy)) + (rz * (ptr->posz - ptr->sph->cz))));
 	d = (b * b) - (4 * ((rx * rx) + (ry * ry) + (rz * rz))) * (((ptr->posx - ptr->sph->cx) * (ptr->posx - ptr->sph->cx)) + ((ptr->posy - ptr->sph->cy) * (ptr->posy - ptr->sph->cy)) + ((ptr->posz - ptr->sph->cz) * (ptr->posz - ptr->sph->cz)) - (ptr->sph->rayon * ptr->sph->rayon));
+	ptr->spot->sol = 0;
 	if (d == 0)
+	{
 		sol1 = (b * (-1)) / (2 * ((rx * rx) + (ry * ry) + (rz * rz)));
+		ptr->spot->sol = sol1;
+	}
 	else if (d >= 0)
 	{
 		sol1 = ((b * (-1)) - sqrt(d)) / (2 * ((rx * rx) + (ry * ry) + (rz * rz)));
 		sol2 = ((b * (-1)) - sqrt(d)) / (2 * ((rx * rx) + (ry * ry) + (rz * rz)));
 		if (sol1 > sol2)
 		{
+			ptr->spot->sol = sol1;
 			if (ptr->distance < sol1 && ptr->distance != 0)
 				return (-1);
 		}
 		else
 		{
+			ptr->spot->sol = sol2;
 			if (ptr->distance < sol2 && ptr->distance != 0)
 			return (-1);
 		}
@@ -168,7 +174,7 @@ void	ft_check_impact(double x, double y, t_data *ptr)
 //	if (((ptr->posx + rx - ptr->sph->cx) * (ptr->posx + rx - ptr->sph->cx)) + ((ptr->posy + ry - ptr->sph->cy) * (ptr->posy + ry - ptr->sph->cy)) + ((ptr->posz + rz - ptr->sph->cz) * (ptr->posz + rz - ptr->sph->cz)) <= (ptr->sph->rayon * ptr->sph->rayon))
 	if (ft_solve_poly(ptr, rx, ry, rz) >= 0)
 	{
-//		ft_putstr("Sphere\n");
+		ft_set_spot(ptr, rx, ry, rz);
 		ft_draw(ptr, x, y);
 	}
 }
@@ -209,6 +215,9 @@ void	ft_set_coord(t_data *ptr)
 	ptr->ground->bx = 1000;
 	ptr->ground->by = 200;
 	ptr->ground->bz = 0;
+	ptr->spot->posx = 1000;
+	ptr->spot->posy = 50;
+	ptr->spot->posz = -500;
 }
 
 void	ft_set_sphere(t_data *ptr)
@@ -216,11 +225,14 @@ void	ft_set_sphere(t_data *ptr)
 	t_wall *wall;
 	t_wall *ground;
 	t_sph *sph;
+	t_spot	*spot;
 
+	spot = (t_spot *)malloc(sizeof(t_spot));
 	wall = (t_wall *)malloc(sizeof(t_wall));
 	ground = (t_wall *)malloc(sizeof(t_wall));
 	sph = (t_sph *)malloc(sizeof(t_sph));
 	ptr->wall = wall;
+	ptr->spot = spot;
 	ptr->ground = ground;
 	ft_set_coord(ptr);
 	sph->cx = 50;
@@ -229,7 +241,7 @@ void	ft_set_sphere(t_data *ptr)
 	sph->rayon = 50;
 	ptr->posx = 50;
 	ptr->posy = 50;
-	ptr->posz = -200;
+	ptr->posz = -300;
 	ptr->red = 0;
 	ptr->green = 0;
 	ptr->blue = 255;
