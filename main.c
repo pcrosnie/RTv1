@@ -217,9 +217,9 @@ void	ft_set_coord(t_data *ptr)
 	ptr->ground->bx = 1000;
 	ptr->ground->by = 200;
 	ptr->ground->bz = 0;
-	ptr->spot->posx = 50;
-	ptr->spot->posy = 50;
-	ptr->spot->posz = 50;
+	ptr->spot->posx = 100;
+	ptr->spot->posy = 100;
+	ptr->spot->posz = 100;
 }
 
 void	ft_set_sphere(t_data *ptr)
@@ -243,7 +243,7 @@ void	ft_set_sphere(t_data *ptr)
 	sph->rayon = 50;
 	ptr->posx = 50;
 	ptr->posy = 50;
-	ptr->posz = -300;
+	ptr->posz = -1000;
 	ptr->red = 0;
 	ptr->green = 0;
 	ptr->blue = 255;
@@ -270,14 +270,14 @@ void	ft_set_sphere_angles(t_data *ptr)
 int	ft_move(int button, t_data *ptr)
 {
 	(button == 53) ? exit(0) : 0;
-	(button == 126) ? ptr->posy -= 10 : 0;
-	(button == 125) ? ptr->posy += 10 : 0;
-	(button == 124) ? ptr->posz += 10 : 0;
-	(button == 123) ? ptr->posz -= 10 : 0;
+	(button == 126) ? ptr->sph->cy -= 10 : 0;
+	(button == 125) ? ptr->sph->cy += 10 : 0;
+	(button == 124) ? ptr->sph->cz += 10 : 0;
+	(button == 123) ? ptr->sph->cz -= 10 : 0;
 	(button == 34) ? ptr->ahor += M_PI_2 / 6 : 0;
 	(button == 31) ? ptr->ahor -= M_PI_2 / 6 : 0;
-	(button == 78) ? ptr->posx -= 10 : 0;
-	(button == 69) ? ptr->posx += 10 : 0;
+	(button == 78) ? ptr->sph->cx -= 10 : 0;
+	(button == 69) ? ptr->sph->cz += 10 : 0;
 	(button == 15) ? ptr->spot->posx += 10 : 0;
 	(button == 17) ? ptr->spot->posx -= 10 : 0;
 	(button == 13) ? ptr->spot->posy += 10 : 0;

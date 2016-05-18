@@ -31,9 +31,9 @@ typedef struct	s_data
 	double	posz;
 	double	ahor;
 	double	aver;
-	int		red;
-	int		green;
-	int		blue;
+	float		red;
+	float		green;
+	float		blue;
 	double	distance;
 	struct	s_sph	*sph;
 	struct	s_wall	*wall;

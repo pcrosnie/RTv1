@@ -49,18 +49,17 @@ void	ft_set_spot(t_data *ptr, double rx, double ry, double rz)
 	double sol;
 
 	sol = ptr->spot->sol;
-	ptr->spot->distance_max = sqrt(((ptr->spot->posx - ptr->sph->cx) * (ptr->spot->posx - ptr->sph->cx)) + ((ptr->spot->posy - ptr->sph->cy) * (ptr->spot->posy - ptr->sph->cy)) + ((ptr->spot->posz - ptr->sph->cz) * (ptr->spot->posz - ptr->sph->cz)));
-	coeff = ptr->spot->distance_max - sqrt(((ptr->spot->posx - (ptr->posx + (rx * sol))) * (ptr->spot->posx - (ptr->posx + (rx * sol)))) + ((ptr->spot->posy - (ptr->posy * (ry * sol))) * (ptr->spot->posy - (ptr->posy + (ry * sol)))) + ((ptr->spot->posz - (ptr->posz + (rz * sol))) * (ptr->spot->posz - (ptr->posz + (rz * sol)))));
+	ptr->spot->distance_max = sqrt(((ptr->spot->posx - ptr->sph->cx) * (ptr->spot->posx - ptr->sph->cx)) + ((ptr->spot->posy - ptr->sph->cy) * (ptr->spot->posy - ptr->sph->cy)) + ((ptr->spot->posz - ptr->sph->cz) * (ptr->spot->posz - ptr->sph->cz))) + ptr->sph->rayon;
+	coeff = ptr->spot->distance_max - sqrt(((ptr->spot->posx - (ptr->posx + (rx * sol))) * (ptr->spot->posx - (ptr->posx + (rx * sol)))) + ((ptr->spot->posy - (ptr->posy + (ry * sol))) * (ptr->spot->posy - (ptr->posy + (ry * sol)))) + ((ptr->spot->posz - (ptr->posz + (rz * sol))) * (ptr->spot->posz - (ptr->posz + (rz * sol)))));
 //	ptr->green = coeff;
-	ptr->blue = coeff / 1.5 + 100;
-//	printf("%f\n", coeff);
-	ptr->red = coeff / 1.5 + 100;
-	if (coeff / 1.5 + 100 >= 255)
+	ptr->blue = coeff / 2 + 125;
+	ptr->red = coeff / 2 + 125;
+	if (coeff / 2 + 125 > 255 || !coeff)
 	{
 		ptr->blue = 255;
 		ptr->red = 255;
 	}
-	else if (coeff / 1.5 + 100 <= 0)
+	else if (coeff / 2 + 125 < 0)
 	{
 		ptr->blue = 0;
 		ptr->red = 0;
