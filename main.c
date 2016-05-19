@@ -6,7 +6,7 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/27 14:10:05 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/05/12 17:27:20 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/19 15:26:29 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,38 +22,6 @@ void	ft_draw(t_data *ptr, float x, float y)
 	ptr->data_addr[nb + 1] = ptr->green;
 	ptr->data_addr[nb + 2] = ptr->blue;
 }
-
-/*
-void	ft_check_impact(double x, double y, t_data *ptr, t_sph *sph)
-{
-	double	rx;
-	double	ry;
-	double	rz;
-	double	ret;
-	int i;
-
-	i = 0;
-	ret = 0;
-	ptr->t = ptr->posy - sph->cy - 100;
-//	while (ptr->t < ptr->posy - sph->cy)
-//	{
-//	rx = ptr->posx + (tan(ptr->ahor + ((M_PI_2 / 900) * (x + 1))) * ptr->t);
-	rx = ptr->posx + ((cos(ptr->aver + ((M_PI / 3 / 900) * (y + 1) * ptr->t)) * cos(ptr->ahor + ((M_PI_2 / 900) * (x + 1)) * ptr->t)) / ptr->t);
-	ry = ptr->posy + (ptr->t / (cos(ptr->aver + ((M_PI / 3 / 900) * (y + 1) * ptr->t)) * sin(ptr->ahor + ((M_PI_2 / 900) * (x + 1)) * ptr->t)));
-	rz = ptr->posz + (sin(ptr->aver + ((M_PI / 3) / 600) * (y + 1)) * ptr->t);
-	ret = ((rx - sph->cx) * (rx - sph->cx)) + ((ry - sph->cy) * (ry - sph->cy)) + ((rz - sph->cz) * (rz - sph->cz));
-//	printf("%f : %f\n", rx, ret);
-	if (ret <= 2500)
-	{
-		ft_draw(ptr, x, y);
-	}
-	ptr->t++;
-//	ft_putnbr(ptr->posy - sph->cy);
-//	ft_putchar('\n');
-//	ft_putstr("here\n");
-//	}
-}
-*/
 
 double	ft_solve_poly(t_data *ptr, double rx, double ry, double rz)
 {
@@ -94,11 +62,11 @@ int		ft_set_wall(t_data *ptr, double rx, double ry, double rz)
 {
 	double a;
 
-	a = ((ptr->wall->a * -ptr->posx) + (ptr->wall->b * -ptr->posy) + (ptr->wall->c * -ptr->posz)) / ((ptr->wall->a * rx) + (ptr->wall->b * ry) + (ptr->wall->c * rz));
+	a = -((ptr->wall->a * ptr->wall->ax) + (ptr->wall->b * ptr->wall->ay) + (ptr->wall->c * ptr->wall->az)) / ((ptr->wall->a * rx) + (ptr->wall->b * ry) + (ptr->wall->c * rz));
 //	ptr->spot->sol = a;
 //	ft_set_spot(ptr, rx, ry, rz);
 //	printf("%f\n", a);
-//	if (ptr->posy + (ry * a) > ptr->wall->ay && ptr->posy + (ry * a) < ptr->wall->bx && ptr->posx + (rx * a) > ptr->wall->by && ptr->posx + (rx * a) < ptr->wall->az)
+	if (ptr->posy + (ry * a) <= ptr->wall->ay && ptr->posz + (rz * a) < ptr->wall->az && ptr->posz + (rz * a) > 0 && ptr->posy + (ry * a) > 0 && ptr->posx + (rx * a) < ptr->wall->ax)
 		return (1);
 	return (0);
 }
@@ -137,25 +105,15 @@ void	ft_check_impact(double x, double y, t_data *ptr)
 //	double az;
 //	double ret;
 
-//	ry = cos(ptr->ahor + ((M_PI_2 / 900) * (450 - x))) * cos(ptr->aver + ((M_PI_2 / 900) * (450 - y)));
-//	rx = cos(ptr->ahor + ((M_PI_2 / 900) * (450 - x))) * sin(ptr->aver + ((M_PI_2 / 900) * (450 - y)));
-//	rz = sin(ptr->ahor + ((M_PI_2 / 900) * (450 - x)));
 	rx = 450 - x;
 	ry = 450 - y;
 	rz = 2163;
 	vector_normalize(&rx, &ry, &rz);
-//	printf("%f : ", rz);
-//	printf("%f\n", az);
-//	rx = rx - ptr->posx;
-//	ry = ry - ptr->posy;
-//	rz = rz - ptr->posz;
-//	vector_normalize(&rx, &ry, &rz);
 	if (ft_set_wall(ptr, rx, ry, rz) == 1)
 	{
 		ptr->green = 45;
 		ptr->blue = 145;
 		ptr->red = 0;
-//		ft_putstr("Wall\n");
 		ft_draw(ptr, x, y);
 		ptr->green = 0;
 		ptr->blue = 255;
@@ -202,15 +160,15 @@ void	ft_set_rays(t_data *ptr)
 
 void	ft_set_coord(t_data *ptr)
 {
-	ptr->wall->a = 1;
-	ptr->wall->b = 0;
-	ptr->wall->c = 0;
-	ptr->wall->ax = 0;
-	ptr->wall->ay = 0;
+	ptr->wall->ax = 100;
+	ptr->wall->ay = 1000;
 	ptr->wall->az = 200;
-	ptr->wall->bx = 1000;
-	ptr->wall->by = 0;
+	ptr->wall->bx = 200;
+	ptr->wall->by = 1000;
 	ptr->wall->bz = 200;
+	ptr->wall->a = ptr->wall->bx - ptr->wall->ax;
+	ptr->wall->b = ptr->wall->by - ptr->wall->ay;
+	ptr->wall->c = ptr->wall->bz - ptr->wall->az;
 	ptr->ground->ax = 0;
 	ptr->ground->ay = 200;
 	ptr->ground->az = 0;
@@ -267,6 +225,20 @@ void	ft_set_sphere_angles(t_data *ptr)
 	ptr->sph->cz = tmp2;
 }
 
+void	ft_set_sphere_angles2(t_data *ptr)
+{
+	double tmp;
+	double tmp2;
+
+	tmp = ptr->sph->cx;
+	tmp2 = ptr->sph->cz;
+	ptr->sph->cx = tmp * cos(ptr->aver) + (ptr->sph->cz * sin(ptr->aver));
+	ptr->sph->cz = tmp * (-sin(ptr->aver)) + (ptr->sph->cz * cos(ptr->aver));
+	ft_set_wall_angles2(ptr);
+	ptr->sph->cx = tmp;
+	ptr->sph->cz = tmp2;
+}
+
 int	ft_move(int button, t_data *ptr)
 {
 	(button == 53) ? exit(0) : 0;
@@ -276,6 +248,8 @@ int	ft_move(int button, t_data *ptr)
 	(button == 123) ? ptr->sph->cz -= 10 : 0;
 	(button == 34) ? ptr->ahor += M_PI_2 / 6 : 0;
 	(button == 31) ? ptr->ahor -= M_PI_2 / 6 : 0;
+	(button == 40) ? ptr->aver += M_PI_2 / 6 : 0;
+	(button == 37) ? ptr->aver -= M_PI_2 / 6 : 0;
 	(button == 78) ? ptr->sph->cx -= 10 : 0;
 	(button == 69) ? ptr->sph->cz += 10 : 0;
 	(button == 15) ? ptr->spot->posx += 10 : 0;

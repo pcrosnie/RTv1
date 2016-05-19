@@ -6,7 +6,7 @@
 /*   By: pcrosnie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/27 14:10:44 by pcrosnie          #+#    #+#             */
-/*   Updated: 2016/05/12 15:03:28 by pcrosnie         ###   ########.fr       */
+/*   Updated: 2016/05/19 15:22:15 by pcrosnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,8 @@ typedef	struct	s_spot
 	double	sol;
 }				t_spot;
 
+void	ft_set_sphere_angles2(t_data *ptr);
+void	ft_set_wall_angles2(t_data *ptr);
 void	ft_set_rays(t_data *ptr);
 void	ft_set_wall_angles(t_data *ptr);
 void	ft_set_spot(t_data *ptr, double rx, double ry, double rz);
