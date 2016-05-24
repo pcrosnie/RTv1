@@ -41,7 +41,7 @@ double	ft_solve_poly(t_data *ptr, double rx, double ry, double rz)
 	else if (d >= 0)
 	{
 		sol1 = ((b * (-1)) - sqrt(d)) / (2 * ((rx * rx) + (ry * ry) + (rz * rz)));
-		sol2 = ((b * (-1)) - sqrt(d)) / (2 * ((rx * rx) + (ry * ry) + (rz * rz)));
+		sol2 = ((b * (-1)) + sqrt(d)) / (2 * ((rx * rx) + (ry * ry) + (rz * rz)));
 		if (sol1 > sol2)
 		{
 			ptr->spot->sol = sol1;
@@ -66,7 +66,7 @@ int		ft_set_wall(t_data *ptr, double rx, double ry, double rz)
 //	ptr->spot->sol = a;
 //	ft_set_spot(ptr, rx, ry, rz);
 //	printf("%f\n", a);
-	if (ptr->posy + (ry * a) <= ptr->wall->ay && ptr->posz + (rz * a) < ptr->wall->az && ptr->posz + (rz * a) > 0 && ptr->posy + (ry * a) > 0 && ptr->posx + (rx * a) < ptr->wall->ax)
+	if (ptr->posy + (ry * a) <= ptr->wall->ay && ptr->posz + (rz * a) < ptr->wall->az && ptr->posz + (rz * a) > 0 && ptr->posy + (ry * a) > 0)
 		return (1);
 	return (0);
 }
@@ -109,6 +109,12 @@ void	ft_check_impact(double x, double y, t_data *ptr)
 	ry = 450 - y;
 	rz = 2163;
 	vector_normalize(&rx, &ry, &rz);
+	if (ft_draw_cyl(ptr, rx, ry, rz) >= 0)
+	{
+		ptr->red = 255;
+		ft_draw(ptr, x, y);
+		ptr->red = 0;
+	}
 	if (ft_set_wall(ptr, rx, ry, rz) == 1)
 	{
 		ptr->green = 45;
@@ -136,6 +142,9 @@ void	ft_check_impact(double x, double y, t_data *ptr)
 	{
 		ft_set_spot(ptr, rx, ry, rz);
 		ft_draw(ptr, x, y);
+		ptr->red = 0;
+		ptr->blue = 0;
+		ptr->green = 0;
 	}
 }
 
@@ -160,12 +169,12 @@ void	ft_set_rays(t_data *ptr)
 
 void	ft_set_coord(t_data *ptr)
 {
-	ptr->wall->ax = 100;
-	ptr->wall->ay = 1000;
-	ptr->wall->az = 200;
-	ptr->wall->bx = 200;
-	ptr->wall->by = 1000;
-	ptr->wall->bz = 200;
+	ptr->wall->ax = 0;
+	ptr->wall->ay = 5000;
+	ptr->wall->az = 1000;
+	ptr->wall->bx = 1000;
+	ptr->wall->by = 5000;
+	ptr->wall->bz = 1000;
 	ptr->wall->a = ptr->wall->bx - ptr->wall->ax;
 	ptr->wall->b = ptr->wall->by - ptr->wall->ay;
 	ptr->wall->c = ptr->wall->bz - ptr->wall->az;
@@ -178,6 +187,21 @@ void	ft_set_coord(t_data *ptr)
 	ptr->spot->posx = 100;
 	ptr->spot->posy = 100;
 	ptr->spot->posz = 100;
+	ft_set_cylindre(ptr);
+}
+
+void	ft_set_sphere_angles(t_data *ptr)
+{
+	double tmp;
+	double tmp2;
+
+	tmp2 = ptr->sph->cz;
+	tmp = ptr->sph->cy;
+	ptr->sph->cy = ptr->sph->cy * cos(ptr->ahor) - (ptr->sph->cz * sin(ptr->ahor));
+	ptr->sph->cz = tmp * sin(ptr->ahor) + (ptr->sph->cz * cos(ptr->ahor));
+	ft_set_wall_angles(ptr);
+	ptr->sph->cy = tmp;
+	ptr->sph->cz = tmp2;
 }
 
 void	ft_set_sphere(t_data *ptr)
@@ -204,25 +228,11 @@ void	ft_set_sphere(t_data *ptr)
 	ptr->posz = -1000;
 	ptr->red = 0;
 	ptr->green = 0;
-	ptr->blue = 255;
+	ptr->blue = 0;
 	ptr->ahor = 0;
 	ptr->aver = M_PI_2 + M_PI_4;
 	ptr->sph = sph;
-	ft_set_rays(ptr);
-}
-
-void	ft_set_sphere_angles(t_data *ptr)
-{
-	double tmp;
-	double tmp2;
-
-	tmp2 = ptr->sph->cz;
-	tmp = ptr->sph->cy;
-	ptr->sph->cy = ptr->sph->cy * cos(ptr->ahor) - (ptr->sph->cz * sin(ptr->ahor));
-	ptr->sph->cz = tmp * sin(ptr->ahor) + (ptr->sph->cz * cos(ptr->ahor));
-	ft_set_wall_angles(ptr);
-	ptr->sph->cy = tmp;
-	ptr->sph->cz = tmp2;
+	ft_set_sphere_angles(ptr);
 }
 
 void	ft_set_sphere_angles2(t_data *ptr)
@@ -281,7 +291,7 @@ void	ft_set_window(t_data *ptr)
 int		main(void)
 {
 	t_data	*ptr;
-	
+
 	ptr = (t_data *)malloc(sizeof(t_data));
 	ft_set_window(ptr);
 	return (0);

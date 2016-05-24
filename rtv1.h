@@ -39,6 +39,7 @@ typedef struct	s_data
 	struct	s_wall	*wall;
 	struct	s_wall	*ground;
 	struct	s_spot	*spot;
+	struct	s_cyl	*cyl;
 }				t_data;
 
 typedef struct	s_sph
@@ -77,6 +78,31 @@ typedef	struct	s_spot
 	double	sol;
 }				t_spot;
 
+typedef struct	s_cyl
+{
+	double	x;
+	double	y;
+	double	z;
+	double	ux;
+	double	uy;
+	double	uz;
+	double	vx;
+	double	vy;
+	double	vz;
+	double	ax;
+	double	ay;
+	double	az;
+	double	bx;
+	double	by;
+	double	bz;
+	double	cx;
+	double	cy;
+	double	cz;
+	double	rayon;
+}		t_cyl;
+
+double	ft_draw_cyl(t_data *ptr, double rx, double ry, double rz);
+void	ft_set_cylindre(t_data *ptr);
 void	ft_set_sphere_angles2(t_data *ptr);
 void	ft_set_wall_angles2(t_data *ptr);
 void	ft_set_rays(t_data *ptr);

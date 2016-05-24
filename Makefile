@@ -14,7 +14,7 @@ NAME = rtv1
 
 FLAGS = -Wall -Werror -Wextra -framework OpenGl -framework AppKit
 
-SRC = libft/libft.a libmlx.a main.c ft_angles.c
+SRC = libft/libft.a libmlx.a main.c ft_angles.c ft_cylindre.c
 
 all: $(NAME)
 
